@@ -37,22 +37,8 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .position(x: 100, y: 80)
                 
+                // MARK: block create here!
                 
-                VStack(alignment: .center) {
-                    let randomTrash = createTrash()
-                    Rectangle()
-                        .frame(width: randomTrash.width, height: randomTrash.height)
-                        .position(x: 100, y: 80)
-                        .offset(x: isDrop ? -100 : 300, y: 100)
-                        .animation(.easeIn, value: isDrop)
-                
-                    Button {
-                        isDrop.toggle()
-                    } label: {
-                        Text("Drop!")
-                    }
-                    
-                }
                 
                 HStack(spacing: 0) {
                     Image("woodbox")
@@ -116,16 +102,41 @@ func createTrash() -> Trash {
     return randomTrash
 }
 
-func moveTrash(randomTrash: Trash) {
+func moveTrash(Trash: Trash) {
     
 }
 
-func dropTrash(randomTrash: Trash) {
+func dropTrash(Trash: Trash) {
     
     
 }
 
-func stackBook() {
+func continueDrop(){
+    
+    
+}
+
+func runEngine() {
+    /*
+    while(!gameLose) {
+        moveTrash()
+        if(onTapGesture) {
+            dropTrash()
+            
+            stackCalculate()
+        }
+     
+        continueDrop()
+    }
+    */
+}
+
+func gameLose() -> Bool {
+    
+    return false
+}
+
+func stackCalculate() {
     
 }
 
@@ -142,6 +153,7 @@ struct Trash {
     var mainPoint: Double
     let width: CGFloat
     let height: CGFloat
+    let image: Image
     
     init(type: TrashType) {
         self.type = type
