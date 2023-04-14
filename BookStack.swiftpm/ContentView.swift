@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State var bookCount: Int = 0
     @State var isDrop: Bool = false
+//    @State var timer: Timer
     
     var body: some View {
         GeometryReader { geo in
@@ -38,57 +39,88 @@ struct ContentView: View {
                 
                 
                 VStack(alignment: .center) {
-                    let randomBook = createBook()
+                    let randomTrash = createTrash()
                     Rectangle()
-                        .frame(width: randomBook.width, height: randomBook.height)
+                        .frame(width: randomTrash.width, height: randomTrash.height)
                         .position(x: 100, y: 80)
                         .offset(x: isDrop ? -100 : 300, y: 100)
                         .animation(.easeIn, value: isDrop)
-                    
+                
                     Button {
                         isDrop.toggle()
                     } label: {
                         Text("Drop!")
                     }
+                    
                 }
+                
+                HStack(spacing: 0) {
+                    Image("woodbox")
+                        .resizable()
+                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                        .position(x: geo.size.width / 6, y: 700)
+                    
+                    Image("woodbox")
+                        .resizable()
+                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                        .position(x: geo.size.width / 6, y: 700)
+                    
+                    Image("woodbox")
+                        .resizable()
+                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                        .position(x: geo.size.width / 6, y: 700)
+                }
+                
+                
+                Text("can")
+                    .bold()
+                    .font(.system(size: 35))
+                    .position(x: geo.size.width / 6, y: 700)
+                
+                Text("general")
+                    .bold()
+                    .font(.system(size: 30))
+                    .position(x: geo.size.width / 2, y: 700)
+                
+                Text("bottle")
+                    .bold()
+                    .font(.system(size: 35))
+                    .position(x: geo.size.width / 1.2, y: 700)
             }
         }
     }
 }
 
-func createBook() -> Book {
+func createTrash() -> Trash {
     
-    var randomNumber: Int = Int.random(in: 0...3)
-    let randomBook: Book
+    let randomNumber: Int = Int.random(in: 0...2)
+    let randomTrash: Trash
     switch (randomNumber) {
         case 0:
-            randomBook = Book(type: .Large)
+            randomTrash = Trash(type: .Can)
             break
             
         case 1:
-            randomBook = Book(type: .Big)
+            randomTrash = Trash(type: .Bottle)
             break
         
         case 2:
-            randomBook = Book(type: .Middle)
+            randomTrash = Trash(type: .General)
             break
         
-        case 3:
-            randomBook = Book(type: .Small)
-            break
         default:
-            randomBook = Book(type: .Small)
+            randomTrash = Trash(type: .General)
             break
     }
     
-    return randomBook
+    return randomTrash
 }
 
-func moveBook(randomBook: Book) {
+func moveTrash(randomTrash: Trash) {
     
 }
 
-func dropBook(randomBook: Book) {
+func dropTrash(randomTrash: Trash) {
     
     
 }
@@ -105,39 +137,35 @@ func collapsBook() {
     
 }
 
-struct Book {
-    let type: BookType
+struct Trash {
+    let type: TrashType
     var mainPoint: Double
     let width: CGFloat
     let height: CGFloat
     
-    init(type: BookType) {
+    init(type: TrashType) {
         self.type = type
         switch type {
-            case .Large:
+            case .Can:
                 width = 120
                 mainPoint = 60
                 height = 40
-            case .Big:
+            case .General:
                 width = 100
                 mainPoint = 50
                 height = 25
-            case .Middle:
+            case .Bottle:
                 width = 75
                 mainPoint = 37.5
                 height = 20
-            case .Small:
-                width = 50
-                mainPoint = 25
-                height = 15
         }
     }
 }
 
 
 // MARK: books top pos is y: 110
-enum BookType {
-    case Large, Big, Middle, Small
+enum TrashType: CaseIterable {
+    case Can, General, Bottle
 }
 
 
