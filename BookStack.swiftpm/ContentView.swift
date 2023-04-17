@@ -1,11 +1,10 @@
 import SwiftUI
+import Combine
 
 struct ContentView: View {
-    @State var bookCount: Int = 0
-    @State var isDrop: Bool = false
-    @State var isMoving: Bool = false
-    //    @State var timer: Timer
-    
+    @State var trashObject: Trash = Trash()
+    @State var leftTime: Double = 0.0
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -16,6 +15,7 @@ struct ContentView: View {
                     .scaledToFill()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                     .clipped()
+                
                 
                 
                 Image(systemName: "cloud.fill")
@@ -39,73 +39,145 @@ struct ContentView: View {
                     .position(x: 100, y: 80)
                 
                 // MARK: block create here!
+                VStack {
+                    ProgressView("Left Time", value: leftTime, total: 10)
+                        .padding()
+                        .position(x: 200, y: 20)
+                }
+                .onReceive(timer) { _ in
+                   
+                    if leftTime < 10 {
+                        leftTime += 0.5
+                    }
+                }
                 
-                //                Rectangle()
-                //                    .frame(width: 10, height: 10)
-                //                    .onAppear {
-                //                        withAnimation(self.moveTrash, <#() throws -> Void#>)
-                //                    }
-                
-                Button {
+                ZStack {
                     
-                } label: {
-                    Image("can")
+                    Rectangle()
+                        .foregroundColor(.purple)
+                        .frame(width: 300, height: 300)
+                        .cornerRadius(40)
+                    
+                    Image(trashObject.getType())
                         .resizable()
-                        .frame(width: 100, height: 100)
-                        .offset(x: isMoving ? -150 : 150, y: -200)
-                        .animation(moveTrash)
-                        .onAppear {
-                            self.isMoving = true
+                        .frame(width: 250, height: 250)
+                        .background(.white)
+                        .cornerRadius(40)
+                    
+                    
+                    HStack(spacing: 0) {
+                        
+                        Button {
+                            print("Can")
+                            if(trashObject.getType() == "can") {
+                                print("O")
+                            }else{
+                                print("x")
+                            }
+                            leftTime = 0
+                            trashObject = Trash()
+                        } label: {
+                            ZStack {
+                                Image("woodbox")
+                                    .resizable()
+                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .position(x: geo.size.width / 6, y: 700)
+                                
+                                Text("can")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 35))
+                                    .position(x: geo.size.width / 6, y: 700)
+                            }
+                            
                         }
+                        
+                        
+                        Button {
+                            print("Paper")
+                            if(trashObject.getType() == "paper") {
+                                print("O")
+                            }else{
+                                print("x")
+                            }
+                            trashObject = Trash()
+                            leftTime = 0
+                            
+                        } label: {
+                            ZStack {
+                                Image("woodbox")
+                                    .resizable()
+                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .position(x: geo.size.width / 6, y: 700)
+                                
+                                Text("paper")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 35))
+                                    .position(x: geo.size.width / 6, y: 700)
+                            }
+                            
+                        }
+                        
+                        
+                        Button {
+                            print("Bottle")
+                            if(trashObject.getType() == "bottle") {
+                                print("O")
+                            }else{
+                                print("x")
+                            }
+                            trashObject = Trash()
+                            leftTime = 0
+                            
+                        } label: {
+                            ZStack {
+                                Image("woodbox")
+                                    .resizable()
+                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .position(x: geo.size.width / 6, y: 700)
+                                
+                                Text("bottle")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 35))
+                                    .position(x: geo.size.width / 6, y: 700)
+                            
+                            }
+                        }
+                    }
                 }
-                
-                
-                
-                HStack(spacing: 0) {
-                    Image("woodbox")
-                        .resizable()
-                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                        .position(x: geo.size.width / 6, y: 700)
-                    
-                    Image("woodbox")
-                        .resizable()
-                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                        .position(x: geo.size.width / 6, y: 700)
-                    
-                    Image("woodbox")
-                        .resizable()
-                        .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                        .position(x: geo.size.width / 6, y: 700)
-                }
-                
-                
-                Text("can")
-                    .bold()
-                    .font(.system(size: 35))
-                    .position(x: geo.size.width / 6, y: 700)
-                
-                Text("paper")
-                    .bold()
-                    .font(.system(size: 30))
-                    .position(x: geo.size.width / 2, y: 700)
-                
-                Text("bottle")
-                    .bold()
-                    .font(.system(size: 35))
-                    .position(x: geo.size.width / 1.2, y: 700)
             }
         }
     }
 }
 
-
-
-var moveTrash: Animation {
-    Animation.linear(duration: 2)
-        .repeatForever()
+extension View {
+    func eraseToAnyView() -> AnyView {
+        AnyView(self)
+    }
 }
 
-func dropTrash(Trash: Trash) {
+var timer: Timer?
+var timerNum: Int = 0
+
+
+func makeTrash(isDropping: Bool) -> any View {
+    
+    
+    
+    let trash: String = Trash().getType()
+    
+    
+    return Image(trash)
+        .resizable()
+        .frame(width: 100, height: 100)
+        .position(x: 180, y: 200)
+}
+
+
+
+func isRightType() {
     
     
 }
@@ -147,46 +219,49 @@ struct Trash {
     let type: TrashType
     let image: Image
     
-    init(type: TrashType) {
-        self.type = type
-        switch type {
-            case .Can:
-                image = Image("can")
-            case .Paper:
-                image = Image("paper")
-            case .Bottle:
-                image = Image("bottle")
-        }
-    }
-    
-    func createTrash() -> Trash {
+    init() {
         
         let randomNumber: Int = Int.random(in: 0...2)
-        let randomTrash: Trash
         switch (randomNumber) {
             case 0:
-                randomTrash = Trash(type: .Can)
+                self.type = .Can
+                self.image = Image("can")
                 break
                 
             case 1:
-                randomTrash = Trash(type: .Bottle)
+                self.type = .Bottle
+                self.image = Image("bottle")
                 break
                 
             case 2:
-                randomTrash = Trash(type: .Paper)
+                self.type = .Paper
+                self.image = Image("paper")
                 break
                 
             default:
-                randomTrash = Trash(type: .Paper)
+                self.type = .Paper
+                self.image = Image("image")
                 break
         }
-        
-        return randomTrash
+    }
+    
+    
+    func getType() -> String {
+        switch type {
+            case .Bottle:
+                return "bottle"
+            case .Can:
+                return "can"
+            case .Paper:
+                return "paper"
+            default:
+                return "paper"
+        }
     }
 }
 
 
-// MARK: books top pos is y: 110
+// MARK: trashType define
 enum TrashType: CaseIterable {
     case Can, Paper, Bottle
 }
