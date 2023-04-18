@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "BookStack",
+    name: "recyclingGame",
     platforms: [
         .iOS("15.2")
     ],
     products: [
         .iOSApplication(
-            name: "BookStack",
+            name: "recyclingGame",
             targets: ["AppModule"],
             bundleIdentifier: "com.downpool.BookStack",
             teamIdentifier: "25XZW379JD",

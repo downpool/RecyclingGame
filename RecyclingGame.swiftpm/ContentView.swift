@@ -174,8 +174,6 @@ var timerNum: Int = 0
 
 func makeTrash(isDropping: Bool) -> any View {
     
-    
-    
     let trash: String = Trash().getType()
     
     
@@ -265,8 +263,6 @@ struct Trash {
             case .Can:
                 return "can"
             case .Paper:
-                return "paper"
-            default:
                 return "paper"
         }
     }
