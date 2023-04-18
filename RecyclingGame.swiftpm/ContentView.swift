@@ -4,15 +4,15 @@ import Combine
 struct ContentView: View {
     @State var trashObject: Trash = Trash()
     @State var leftTime: Double = 0.0
-    @State var leftLife: Double = 0.0
+    @State var leftLife: Double = 10
+    @State var gameOver: Bool = false
+    @State var gameOver2: Bool = false
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                
-                // MARK: drop center = x: 750, y: 50
                 Image("background")
                     .resizable()
                     .scaledToFill()
@@ -41,124 +41,198 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .position(x: 100, y: 80)
                 
-                // MARK: block create here!
-                
                 ZStack {
+                    
+                    Text("Stack\n    \(String(countStacks))\n Max\n    \(String(maxStack))")
+                        .position(x: geo.size.width / 9, y: geo.size.height / 2)
+                        .font(.system(size: 50))
+                    
                     
                     Rectangle()
                         .foregroundColor(.purple)
-                        .frame(width: 300, height: 300)
+                        .frame(width: 600, height: 600)
                         .cornerRadius(40)
                     
-                    Image(trashObject.getType())
-                        .resizable()
-                        .frame(width: 250, height: 250)
-                        .background(.white)
-                        .cornerRadius(40)
+                    
+                    makeTrash(trash: trashObject)
+                        .alert(isPresented: $gameOver2) {
+                            Alert(title: Text("You lose.."), message: Text("Your max stack is \(maxStack)"), dismissButton: .cancel())
+                        }
                     
                     VStack {
+                        Text("Life")
+                            .font(.system(size: 30))
+                            .position(x: geo.size.width / 2, y: 100)
                         
-                        ProgressView("Life", value: leftLife, total: 10)
+                        ProgressView( value: leftLife, total: 10)
                             .padding()
-                            .position(x: 215, y: 20)
-                            .progressViewStyle(LinearProgressViewStyle(tint: leftLife < 8 ? .blue : .red))
+                            .position(x: geo.size.width / 2, y: 30)
+                            .progressViewStyle(LinearProgressViewStyle(tint: leftLife > 4 ? .blue : .red))
                         
-                        ProgressView("Left Time!", value: leftTime, total: 10)
+                        Text("Left Time!")
+                            .font(.system(size: 30))
+                            .position(x: geo.size.width / 2, y: 0)
+                        ProgressView(value: leftTime, total: 10)
                             .padding()
-                            .position(x: 215, y: 25)
+                            .position(x: geo.size.width / 2, y: -70)
                             .progressViewStyle(LinearProgressViewStyle(tint: leftTime < 7 ? .blue : .red))
-                        
-                        
-                        
+
                         
                         Spacer(minLength: 630)
                         HStack(spacing: 0) {
                             
                             Button {
-                                print("Can")
-                                if(trashObject.getType() == "can") {
-                                    print("O")
-                                }else{
-                                    print("x")
-                                    leftLife += 1
+                                if !gameOver {
+                                    if !matchTrash(answer: trashObject, choose: "can") {
+                                        leftLife -= 1
+                                        countStacks = 0
+                                    }else{
+                                        countStacks += 1
+                                        if maxStack <= countStacks {
+                                            maxStack = countStacks
+                                        }
+                                    }
+                                    leftTime = 0
+                                    trashObject = Trash()
                                 }
-                                leftTime = 0
-                                trashObject = Trash()
                             } label: {
                                 Text("can")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 35))
-                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .font(.system(size: 50))
+                                    .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
                             .background(Image("woodbox")
                                 .resizable()
-                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                                .frame(width: geo.size.width / 5, height: geo.size.width / 5))
                             
                             
                             Button {
-                                print("Paper")
-                                if(trashObject.getType() == "paper") {
-                                    print("O")
-                                }else{
-                                    print("x")
-                                    leftLife += 1
+                                if !gameOver {
+                                    if !matchTrash(answer: trashObject, choose: "paper") {
+                                        leftLife -= 1
+                                        countStacks = 0
+                                    }else{
+                                        countStacks += 1
+                                        if maxStack <= countStacks {
+                                            maxStack = countStacks
+                                        }
+                                    }
+                                    trashObject = Trash()
+                                    leftTime = 0
                                 }
-                                trashObject = Trash()
-                                leftTime = 0
-                                
                             } label: {
                                 Text("paper")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 35))
-                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .font(.system(size: 50))
+                                    .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
                             .background(Image("woodbox")
                                 .resizable()
-                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                                .frame(width: geo.size.width / 5, height: geo.size.width / 5))
                             
                             
                             
                             
                             Button {
-                                print("Bottle")
-                                if(trashObject.getType() == "bottle") {
-                                    print("O")
-                                }else{
-                                    print("x")
-                                    leftLife += 1
+                                if !gameOver{
+                                    if !matchTrash(answer: trashObject, choose: "glass") {
+                                        leftLife -= 1
+                                        countStacks = 0
+                                    }else{
+                                        countStacks += 1
+                                        if maxStack <= countStacks {
+                                            maxStack = countStacks
+                                        }
+                                    }
+                                    trashObject = Trash()
+                                    leftTime = 0
                                 }
-                                trashObject = Trash()
-                                leftTime = 0
-                                
                             } label: {
-                                Text("bottle")
+                                Text("glass")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 35))
-                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
+                                    .font(.system(size: 50))
+                                    .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
                             .background(Image("woodbox")
                                 .resizable()
-                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                                .frame(width: geo.size.width / 5, height: geo.size.width / 5))
+                            
+                            Button {
+                                if !gameOver {
+                                    if !matchTrash(answer: trashObject, choose: "plastic") {
+                                        leftLife -= 1
+                                        countStacks = 0
+                                    }else{
+                                        countStacks += 1
+                                        if maxStack <= countStacks {
+                                            maxStack = countStacks
+                                        }
+                                    }
+                                    trashObject = Trash()
+                                    leftTime = 0
+                                }
+                            } label: {
+                                Text("plastic")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 50))
+                                    .frame(width: geo.size.width / 5, height: geo.size.width / 5)
+                            }
+                            
+                            .background(Image("woodbox")
+                                .resizable()
+                                .frame(width: geo.size.width / 5, height: geo.size.width / 5))
+                            
+                            Button {
+                                if !gameOver{
+                                    if !matchTrash(answer: trashObject, choose: "general") {
+                                        leftLife -= 1
+                                        countStacks = 0
+                                    }else{
+                                        countStacks += 1
+                                        if maxStack <= countStacks {
+                                            maxStack = countStacks
+                                        }
+                                    }
+                                    trashObject = Trash()
+                                    
+                                    leftTime = 0
+                                }
+                            } label: {
+                                Text("general")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 50))
+                                    .frame(width: geo.size.width / 5, height: geo.size.width / 5)
+                            }
+                            
+                            .background(Image("woodbox")
+                                .resizable()
+                                .frame(width: geo.size.width / 5, height: geo.size.width / 5))
+                            
+                            
                             
                         }
                     }
                     .onReceive(timer) { _ in
-                        
                         if leftTime < 10 {
                             leftTime += 1
                         }
                         if leftTime >= 10 {
-                            leftLife += 1
+                            leftLife -= 1
                             leftTime = 0
+                            trashObject = Trash()
                         }
-                        if leftLife >= 10 {
-                            gameLose()
+                        if leftLife <= 0 {
+                            self.timer.upstream.connect().cancel()
+                            gameOver = true
+                            gameOver2 = true
                         }
                     }
                 }
@@ -166,104 +240,78 @@ struct ContentView: View {
         }
     }
 }
+var countStacks: Int = 0
+var maxStack: Int = 0
 
 
-var timer: Timer?
-var timerNum: Int = 0
-
-
-func makeTrash(isDropping: Bool) -> any View {
+func makeTrash(trash: Trash) -> some View {
     
-    let trash: String = Trash().getType()
-    
+    let trash: String = trash.getType()
     
     return Image(trash)
         .resizable()
-        .frame(width: 100, height: 100)
-        .position(x: 180, y: 200)
+        .frame(width: 500, height: 500)
+        .background(.white)
+        .cornerRadius(40)
 }
 
-//struct lifeProgressViewStyle: ProgressViewStyle {
-//    var
-//}
+// MARK: trash match check
 
-func isRightType() {
-    
-    
+func matchTrash(answer: Trash, choose: String) -> Bool {
+    if answer.getType() == choose {
+        return true
+    } else {
+        return false
+    }
 }
 
-func continueDrop(){
-    
-    
-}
-
-func runEngine() {
-    /*
-     while(!gameLose()) {
-     moveTrash()
-     if(onTapGesture) {
-     dropTrash()
-     
-     stackCalculate()
-     }
-     
-     continueDrop()
-     }
-     */
-}
-
-func gameLose() -> Bool {
-    
-    return false
-}
-
-func stackCalculate() {
-    
-}
-
-func checkRightTrash() {
-    
-}
 
 struct Trash {
     let type: TrashType
-    let image: Image
     
     init() {
-        
-        let randomNumber: Int = Int.random(in: 0...2)
+        // MARK: basic type define using randomNumber
+        let randomNumber: Int = Int.random(in: 0...4)
         switch (randomNumber) {
             case 0:
                 self.type = .Can
-                self.image = Image("can")
                 break
                 
             case 1:
-                self.type = .Bottle
-                self.image = Image("bottle")
+                self.type = .Glass
                 break
                 
             case 2:
                 self.type = .Paper
-                self.image = Image("paper")
+                break
+                
+            case 3:
+                self.type = .Plastic
+                break
+                
+            case 4:
+                self.type = .General
                 break
                 
             default:
                 self.type = .Paper
-                self.image = Image("image")
                 break
         }
     }
     
-    
+    // MARK: type define
     func getType() -> String {
         switch type {
-            case .Bottle:
-                return "bottle"
+            case .Plastic:
+                return "plastic"
             case .Can:
                 return "can"
             case .Paper:
                 return "paper"
+            case .Glass:
+                return "glass"
+            case .General:
+                return "general"
         }
     }
 }
@@ -271,7 +319,7 @@ struct Trash {
 
 // MARK: trashType define
 enum TrashType: CaseIterable {
-    case Can, Paper, Bottle
+    case Can, Paper, Plastic, Glass, General
 }
 
 
