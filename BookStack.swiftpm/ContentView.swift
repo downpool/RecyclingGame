@@ -4,7 +4,10 @@ import Combine
 struct ContentView: View {
     @State var trashObject: Trash = Trash()
     @State var leftTime: Double = 0.0
+    @State var leftLife: Double = 0.0
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -39,17 +42,6 @@ struct ContentView: View {
                     .position(x: 100, y: 80)
                 
                 // MARK: block create here!
-                VStack {
-                    ProgressView("Left Time", value: leftTime, total: 10)
-                        .padding()
-                        .position(x: 200, y: 20)
-                }
-                .onReceive(timer) { _ in
-                   
-                    if leftTime < 10 {
-                        leftTime += 0.5
-                    }
-                }
                 
                 ZStack {
                     
@@ -64,86 +56,109 @@ struct ContentView: View {
                         .background(.white)
                         .cornerRadius(40)
                     
-                    
-                    HStack(spacing: 0) {
+                    VStack {
                         
-                        Button {
-                            print("Can")
-                            if(trashObject.getType() == "can") {
-                                print("O")
-                            }else{
-                                print("x")
-                            }
-                            leftTime = 0
-                            trashObject = Trash()
-                        } label: {
-                            ZStack {
-                                Image("woodbox")
-                                    .resizable()
-                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                                    .position(x: geo.size.width / 6, y: 700)
-                                
+                        ProgressView("Life", value: leftLife, total: 10)
+                            .padding()
+                            .position(x: 215, y: 20)
+                            .progressViewStyle(LinearProgressViewStyle(tint: leftLife < 8 ? .blue : .red))
+                        
+                        ProgressView("Left Time!", value: leftTime, total: 10)
+                            .padding()
+                            .position(x: 215, y: 25)
+                            .progressViewStyle(LinearProgressViewStyle(tint: leftTime < 7 ? .blue : .red))
+                        
+                        
+                        
+                        
+                        Spacer(minLength: 630)
+                        HStack(spacing: 0) {
+                            
+                            Button {
+                                print("Can")
+                                if(trashObject.getType() == "can") {
+                                    print("O")
+                                }else{
+                                    print("x")
+                                    leftLife += 1
+                                }
+                                leftTime = 0
+                                trashObject = Trash()
+                            } label: {
                                 Text("can")
                                     .bold()
                                     .foregroundColor(.black)
                                     .font(.system(size: 35))
-                                    .position(x: geo.size.width / 6, y: 700)
-                            }
-                            
-                        }
-                        
-                        
-                        Button {
-                            print("Paper")
-                            if(trashObject.getType() == "paper") {
-                                print("O")
-                            }else{
-                                print("x")
-                            }
-                            trashObject = Trash()
-                            leftTime = 0
-                            
-                        } label: {
-                            ZStack {
-                                Image("woodbox")
-                                    .resizable()
                                     .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                                    .position(x: geo.size.width / 6, y: 700)
+                            }
+                            
+                            .background(Image("woodbox")
+                                .resizable()
+                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                            
+                            
+                            Button {
+                                print("Paper")
+                                if(trashObject.getType() == "paper") {
+                                    print("O")
+                                }else{
+                                    print("x")
+                                    leftLife += 1
+                                }
+                                trashObject = Trash()
+                                leftTime = 0
                                 
+                            } label: {
                                 Text("paper")
                                     .bold()
                                     .foregroundColor(.black)
                                     .font(.system(size: 35))
-                                    .position(x: geo.size.width / 6, y: 700)
-                            }
-                            
-                        }
-                        
-                        
-                        Button {
-                            print("Bottle")
-                            if(trashObject.getType() == "bottle") {
-                                print("O")
-                            }else{
-                                print("x")
-                            }
-                            trashObject = Trash()
-                            leftTime = 0
-                            
-                        } label: {
-                            ZStack {
-                                Image("woodbox")
-                                    .resizable()
                                     .frame(width: geo.size.width / 3, height: geo.size.width / 3)
-                                    .position(x: geo.size.width / 6, y: 700)
+                            }
+                            
+                            .background(Image("woodbox")
+                                .resizable()
+                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                            
+                            
+                            
+                            
+                            Button {
+                                print("Bottle")
+                                if(trashObject.getType() == "bottle") {
+                                    print("O")
+                                }else{
+                                    print("x")
+                                    leftLife += 1
+                                }
+                                trashObject = Trash()
+                                leftTime = 0
                                 
+                            } label: {
                                 Text("bottle")
                                     .bold()
                                     .foregroundColor(.black)
                                     .font(.system(size: 35))
-                                    .position(x: geo.size.width / 6, y: 700)
-                            
+                                    .frame(width: geo.size.width / 3, height: geo.size.width / 3)
                             }
+                            
+                            .background(Image("woodbox")
+                                .resizable()
+                                .frame(width: geo.size.width / 3, height: geo.size.width / 3))
+                            
+                        }
+                    }
+                    .onReceive(timer) { _ in
+                        
+                        if leftTime < 10 {
+                            leftTime += 1
+                        }
+                        if leftTime >= 10 {
+                            leftLife += 1
+                            leftTime = 0
+                        }
+                        if leftLife >= 10 {
+                            gameLose()
                         }
                     }
                 }
@@ -152,11 +167,6 @@ struct ContentView: View {
     }
 }
 
-extension View {
-    func eraseToAnyView() -> AnyView {
-        AnyView(self)
-    }
-}
 
 var timer: Timer?
 var timerNum: Int = 0
@@ -175,7 +185,9 @@ func makeTrash(isDropping: Bool) -> any View {
         .position(x: 180, y: 200)
 }
 
-
+//struct lifeProgressViewStyle: ProgressViewStyle {
+//    var
+//}
 
 func isRightType() {
     
