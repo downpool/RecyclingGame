@@ -8,10 +8,13 @@ struct ContentView: View {
     @State var gameOver: Bool = false
     @State var gameOver2: Bool = false
     
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
+        
         GeometryReader { geo in
+            
             ZStack {
                 Image("background")
                     .resizable()
@@ -42,19 +45,34 @@ struct ContentView: View {
                     .position(x: 100, y: 80)
                 
                 ZStack {
+                    let makeButton = {(type: String) in
+                        if !gameOver {
+                            if !matchTrash(answer: trashObject, choose: type) {
+                                leftLife -= 1
+                                countStacks = 0
+                            }else{
+                                countStacks += 1
+                                if maxStack <= countStacks {
+                                    maxStack = countStacks
+                                }
+                            }
+                            leftTime = 0
+                            trashObject = Trash()
+                        }
+                    }
                     
                     Text("Stack\n    \(String(countStacks))\n Max\n    \(String(maxStack))")
                         .position(x: geo.size.width / 9, y: geo.size.height / 2)
-                        .font(.system(size: 50))
+                        .font(.system(size: ipadFontSize(geo: geo)))
                     
                     
                     Rectangle()
                         .foregroundColor(.purple)
-                        .frame(width: 600, height: 600)
+                        .frame(width: geo.size.width / 1.6, height: geo.size.width / 1.6)
                         .cornerRadius(40)
                     
                     
-                    makeTrash(trash: trashObject)
+                    makeTrash(trash: trashObject, geo: geo)
                         .alert(isPresented: $gameOver2) {
                             Alert(title: Text("You lose.."), message: Text("Your max stack is \(maxStack)"), dismissButton: .cancel())
                         }
@@ -82,24 +100,12 @@ struct ContentView: View {
                         HStack(spacing: 0) {
                             
                             Button {
-                                if !gameOver {
-                                    if !matchTrash(answer: trashObject, choose: "can") {
-                                        leftLife -= 1
-                                        countStacks = 0
-                                    }else{
-                                        countStacks += 1
-                                        if maxStack <= countStacks {
-                                            maxStack = countStacks
-                                        }
-                                    }
-                                    leftTime = 0
-                                    trashObject = Trash()
-                                }
+                                makeButton("can")
                             } label: {
                                 Text("can")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 50))
+                                    .font(.system(size: ipadFontSize(geo: geo)))
                                     .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
@@ -109,24 +115,12 @@ struct ContentView: View {
                             
                             
                             Button {
-                                if !gameOver {
-                                    if !matchTrash(answer: trashObject, choose: "paper") {
-                                        leftLife -= 1
-                                        countStacks = 0
-                                    }else{
-                                        countStacks += 1
-                                        if maxStack <= countStacks {
-                                            maxStack = countStacks
-                                        }
-                                    }
-                                    trashObject = Trash()
-                                    leftTime = 0
-                                }
+                                makeButton("paper")
                             } label: {
                                 Text("paper")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 50))
+                                    .font(.system(size: ipadFontSize(geo: geo)))
                                     .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
@@ -138,24 +132,12 @@ struct ContentView: View {
                             
                             
                             Button {
-                                if !gameOver{
-                                    if !matchTrash(answer: trashObject, choose: "glass") {
-                                        leftLife -= 1
-                                        countStacks = 0
-                                    }else{
-                                        countStacks += 1
-                                        if maxStack <= countStacks {
-                                            maxStack = countStacks
-                                        }
-                                    }
-                                    trashObject = Trash()
-                                    leftTime = 0
-                                }
+                                makeButton("glass")
                             } label: {
                                 Text("glass")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 50))
+                                    .font(.system(size: ipadFontSize(geo: geo)))
                                     .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
@@ -164,24 +146,12 @@ struct ContentView: View {
                                 .frame(width: geo.size.width / 5, height: geo.size.width / 5))
                             
                             Button {
-                                if !gameOver {
-                                    if !matchTrash(answer: trashObject, choose: "plastic") {
-                                        leftLife -= 1
-                                        countStacks = 0
-                                    }else{
-                                        countStacks += 1
-                                        if maxStack <= countStacks {
-                                            maxStack = countStacks
-                                        }
-                                    }
-                                    trashObject = Trash()
-                                    leftTime = 0
-                                }
+                                makeButton("plastic")
                             } label: {
                                 Text("plastic")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 50))
+                                    .font(.system(size: ipadFontSize(geo: geo)))
                                     .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
@@ -190,25 +160,12 @@ struct ContentView: View {
                                 .frame(width: geo.size.width / 5, height: geo.size.width / 5))
                             
                             Button {
-                                if !gameOver{
-                                    if !matchTrash(answer: trashObject, choose: "general") {
-                                        leftLife -= 1
-                                        countStacks = 0
-                                    }else{
-                                        countStacks += 1
-                                        if maxStack <= countStacks {
-                                            maxStack = countStacks
-                                        }
-                                    }
-                                    trashObject = Trash()
-                                    
-                                    leftTime = 0
-                                }
+                                makeButton("general")
                             } label: {
                                 Text("general")
                                     .bold()
                                     .foregroundColor(.black)
-                                    .font(.system(size: 50))
+                                    .font(.system(size: ipadFontSize(geo: geo)))
                                     .frame(width: geo.size.width / 5, height: geo.size.width / 5)
                             }
                             
@@ -236,6 +193,7 @@ struct ContentView: View {
                         }
                     }
                 }
+                
             }
         }
     }
@@ -244,13 +202,23 @@ var countStacks: Int = 0
 var maxStack: Int = 0
 
 
-func makeTrash(trash: Trash) -> some View {
+func ipadFontSize(geo: GeometryProxy) -> CGFloat {
+    
+    if geo.size.width > 1000 {
+        return 50
+    } else {
+        return 30
+    }
+}
+
+
+func makeTrash(trash: Trash, geo: GeometryProxy) -> some View {
     
     let trash: String = trash.getType()
     
     return Image(trash)
         .resizable()
-        .frame(width: 500, height: 500)
+        .frame(width: geo.size.width / 2.1, height: geo.size.width / 2.1)
         .background(.white)
         .cornerRadius(40)
 }
